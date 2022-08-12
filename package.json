@@ -1,0 +1,23 @@
+{
+  "name": "cordova-plugin-network-signal-strength",
+  "version": "1.0.0",
+  "description": "Network signal strength is used to get android phone signal quality",
+  "cordova": {
+    "id": "cordova-plugin-network-signal-strength",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "cordova",
+    "signal",
+    "strength",
+    "gsm",
+    "dBa",
+    "network",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "Francis Olawumi Awe",
+  "license": "ISC"
+}
