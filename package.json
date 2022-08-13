@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-network-signal-strength",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Apache cordova plugin to detect network signal strength and other network updates such as network types and connection state",
   "cordova": {
     "id": "cordova-plugin-network-signal-strength",
