@@ -14,7 +14,16 @@ The API has only one method `window["networkSignalStrength"].networkInfo(infoTyp
    - *CONNECTION_STATE* : to get only the connection state which will return 0 or 1. 
       - 0 : disconnected
       - 1 : connected
-   - *SIGNAL_STRENGTH* : to get only the signal strength information. This return an object which include *** rssi, rssq, rssnr, rsrp, signal level and lte level ***
+   - *SIGNAL_STRENGTH* : to get only the signal strength information. 
+      - This return an object which include *** rssi, rssq, rssnr, rsrp, signal level and lte level ***
+        ```javascript
+          const signalTypeRange = {
+           RSSI: [-113, -51, "dBm"],
+           RSSNR: [-20, +30, "dB"],
+           RSRQ: [-34, 3, "dB"],
+           RSRP: [-140, -43, "dBm"],
+           };
+        ```
    - *NETWORK_TYPE* : to get type of connected network. Return integer -1 to 4 
       - -1 : unknown
       - 0 : disconnected
