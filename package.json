@@ -1,12 +1,16 @@
 {
   "name": "cordova-plugin-network-signal-strength",
   "version": "1.0.0",
-  "description": "Network signal strength is used to get android phone signal quality",
+  "description": "Apache cordova plugin to detect network signal strength and other network updates such as network types and connection state",
   "cordova": {
     "id": "cordova-plugin-network-signal-strength",
     "platforms": [
       "android"
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/code-flag/cordova-plugin-network-signal-strength"
   },
   "keywords": [
     "cordova",
@@ -16,8 +20,14 @@
     "dBa",
     "network",
     "ecosystem:cordova",
-    "cordova-android"
+    "cordova-android",
+    "connection-type",
+    "network-type"
   ],
   "author": "Francis Olawumi Awe",
-  "license": "ISC"
+  "license": "Apache 2.0",
+    "bugs": {
+      "url": "https://github.com/code-flag/cordova-plugin-network-signal-strength/issues"
+    },
+    "homepage": "https://github.com/code-flag/cordova-plugin-network-signal-strength"
 }
