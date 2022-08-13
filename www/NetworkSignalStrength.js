@@ -2,7 +2,7 @@ var exec = require("cordova/exec");
 
 var mainCallbackFunction = () => {};
 /**
- * @var {object} signalTypeRange - defines signal strength properties with range
+ * @var {object} signalTypeRange - defines signal strength properties with ranges
  */
 const signalTypeRange = {
   RSSI: [-113, -51, "dBm"],
