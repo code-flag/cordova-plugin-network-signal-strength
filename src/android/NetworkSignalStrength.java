@@ -25,9 +25,6 @@ public class NetworkSignalStrength extends CordovaPlugin {
 
   private static final int PERMISSION_REQUEST_CODE = 100;
   TelephonyManager telephonyManager;
-  TelephonyManager tmanager = (TelephonyManager) cordova.getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-  ConnectivityManager cmanager = (ConnectivityManager) cordova.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-
 //   TelephonyManager tmanager = (TelephonyManager) _context.getSystemService(
 //       Context.TELEPHONY_SERVICE
 //     );
@@ -45,7 +42,7 @@ public class NetworkSignalStrength extends CordovaPlugin {
       callbackContext.success(getSignalStrength());
       return true;
     }
-    if (action.equals("networkType")) {
+    else if (action.equals("networkType")) {
         if(connectionStatus()) {
             callbackContext.success(String.valueOf(getCurrentNetworkType()));
         }else {
@@ -53,11 +50,11 @@ public class NetworkSignalStrength extends CordovaPlugin {
         }
       return true;
     }
-    if (action.equals("connectionStatus")) {
+    else if (action.equals("connectionStatus")) {
       callbackContext.success(String.valueOf(connectionStatus()));
       return true;
     }
-    if (action.equals("networkDetails")) {
+    else if (action.equals("networkDetails")) {
         if(connectionStatus()) {
             String networkType = String.valueOf(getCurrentNetworkType());
             String networkDetail = "1^" + networkType + "^" + getSignalStrength();
@@ -76,6 +73,7 @@ public class NetworkSignalStrength extends CordovaPlugin {
  */
 
  public String getSignalStrength() {
+   TelephonyManager tmanager = (TelephonyManager) cordova.getActivity().getSystemService(Context.TELEPHONY_SERVICE);
     return tmanager.getSignalStrength().toString();
  }
  
@@ -84,6 +82,9 @@ public class NetworkSignalStrength extends CordovaPlugin {
    * WIFI).
    */
   public boolean connectionStatus() {
+     TelephonyManager tmanager = (TelephonyManager) cordova.getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+  ConnectivityManager cmanager = (ConnectivityManager) cordova.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
     boolean online = false;
     if (tmanager != null) {
       if (tmanager.getDataState() == TelephonyManager.DATA_CONNECTED) {
@@ -107,6 +108,8 @@ public class NetworkSignalStrength extends CordovaPlugin {
    * corresponding type, e.g. CONNECTION_WIFI.
    */
   public byte getCurrentNetworkType() {
+     TelephonyManager tmanager = (TelephonyManager) cordova.getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+  ConnectivityManager cmanager = (ConnectivityManager) cordova.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
 
     // connection types
     byte CONNECTION_UNKNOWN = -1; 

@@ -50,8 +50,8 @@ const returnNetworkDetails = (networkDetails) => {
     let signalStrength = getSignalList(incomingDataArr[2]);
     const networkDetailsObj = {
         CONNECTION_STATE : connectionState,
-        SIGNAL_STRENGTH : networkType,
-        NETWORK_TYPE : signalStrength 
+        SIGNAL_STRENGTH : signalStrength,
+        NETWORK_TYPE : networkType
     }
 
     mainCallbackFunction(networkDetailsObj);
