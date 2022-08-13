@@ -1,6 +1,6 @@
 var exec = require('cordova/exec');
 
-var mainCallbackFunction = null;
+var mainCallbackFunction = () => {};
 /**
  * @var {object} signalTypeRange - defines signal strength properties with range
  */
