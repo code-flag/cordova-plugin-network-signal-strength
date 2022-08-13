@@ -64,6 +64,7 @@ const returnNetworkDetails = (networkDetails) => {
  * @param {function} callback - callback function to invoke
  */
 const returnSignalList = (data) => {
+    // invoke call back
     mainCallbackFunction(getSignalList(data));
 }
 
