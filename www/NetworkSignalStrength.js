@@ -19,8 +19,10 @@ const signalType = ["RSSI", "RSSNR", "RSRQ", "RSRP", "LEVEL", "LTELEVEL"];
 /**
  * This method extract signal strength needed information from the return value
  * such as rssi rsrq rsnnr level lte level - all in dBm unit
+ * SignalStrength_M_xx signify the return type based on android api version
  * @param {string} signals - signal strength returned value
  * @returns object
+ * 
  */
 const getSignalList = (signals) => {
   if (
@@ -31,11 +33,12 @@ const getSignalList = (signals) => {
   ) {
     var netSignal = [];
     let newDataObj;
-    signals
-      .split(":")[2]
+    signals = signals.split(":");
+    if (signals[0] == "SignalStrength_M_1") {
+      signals[3]
       .split(" ")
       .filter((data) => {
-        if (data !== "") {
+        if (data !== "" && data !== null && data !== undefined) {
           newDataObj = data.split("=");
           if (signalType.includes(newDataObj[0]?.toUpperCase())) {
             newDataObj = { [newDataObj[0]]: newDataObj[1] };
@@ -44,6 +47,22 @@ const getSignalList = (signals) => {
         }
       });
     return netSignal;
+    }
+    if(signals[0] == "SignalStrength_M_2") {
+      signals[1]
+      .split(" ")
+      .filter((data) => {
+        if (data !== "" && data !== null && data !== undefined) {
+          newDataObj = data.split("=");
+          if (signalType.includes(newDataObj[0]?.toUpperCase())) {
+            newDataObj = { [newDataObj[0]]: newDataObj[1] };
+            netSignal.push(newDataObj);
+          }
+        }
+      });
+    return netSignal;
+    }
+    
   }
   return signals;
 };
@@ -89,6 +108,17 @@ const returnSignalList = (data) => {
   mainCallbackFunction(getSignalList(data));
 };
 
+/**
+ * This function gets unextracted signal strength details and
+ * invoke callback function
+ * @param {string} data - incoming data or return data
+ * @param {function} callback - callback function to invoke
+ */
+ const returnRawSignalListAsString = (data) => {
+  // invoke call back
+  mainCallbackFunction(data);
+};
+
 function SignalStrength() {
   this.networkInfo = function (infoType, callback) {
     if (infoType === "CONNECTION_STATE") {
@@ -115,6 +145,17 @@ function SignalStrength() {
       mainCallbackFunction = callback;
       return cordova.exec(
         returnSignalList,
+        function (err) {
+          callback(-1);
+        },
+        "NetworkSignalStrength",
+        "signalStrength",
+        []
+      );
+    } else if (infoType === "SIGNAL_STRENGTH_RAW") {
+      mainCallbackFunction = callback;
+      return cordova.exec(
+        returnRawSignalListAsString,
         function (err) {
           callback(-1);
         },

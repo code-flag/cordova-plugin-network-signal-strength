@@ -4,10 +4,26 @@
 package org.apache.cordova.networksignalstrength;
 
 import android.content.Context;
+import android.os.Build;
+import android.telephony.PhoneStateListener;
 import android.net.ConnectivityManager;
 import android.telephony.TelephonyManager;
+import android.telephony.SignalStrength;
+
+import android.telephony.CellSignalStrength;
+import android.telephony.CellSignalStrengthGsm;
+import android.telephony.CellSignalStrengthCdma;
+import android.telephony.CellSignalStrengthLte;
+import android.telephony.CellSignalStrengthWcdma;
+
+import android.telephony.CellInfo;
+import android.telephony.CellInfoLte;
+import android.telephony.CellInfoCdma;
+import android.telephony.CellInfoWcdma;
+import android.telephony.CellInfoGsm;
+
 import android.net.NetworkInfo;
-import java.util.ArrayList;
+import java.util.*;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -25,10 +41,10 @@ public class NetworkSignalStrength extends CordovaPlugin {
 
   private static final int PERMISSION_REQUEST_CODE = 100;
   TelephonyManager telephonyManager;
-//   TelephonyManager tmanager = (TelephonyManager) _context.getSystemService(
-//       Context.TELEPHONY_SERVICE
-//     );
-
+  int rssiStrength = -1;
+  int signalLevel = 0;
+  SignalStrengthStateListener networkSignalListener;
+  CellSignalStrength cellsig;
     
   @Override
   public boolean execute(
@@ -74,7 +90,73 @@ public class NetworkSignalStrength extends CordovaPlugin {
 
  public String getSignalStrength() {
    TelephonyManager tmanager = (TelephonyManager) cordova.getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-    return tmanager.getSignalStrength().toString();
+   String details;
+   int dbm = 0;
+   int level = 0;
+   int asu = 0;
+   // api 30 above
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+          //  Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || 
+         //  Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2 || 
+         //  Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU 
+    ){
+      details =  "SignalStrength_M_1:" + tmanager.getSignalStrength().toString();
+    }
+   // android version 5.0 to version 10 api 21 to api 29
+    else if(
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP 
+      // Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1 || 
+      // Build.VERSION.SDK_INT == Build.VERSION_CODES.M || 
+      // Build.VERSION.SDK_INT == Build.VERSION_CODES.N || 
+      // Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1 || 
+      // Build.VERSION.SDK_INT == Build.VERSION_CODES.O || 
+      // Build.VERSION.SDK_INT == Build.VERSION_CODES.O_MR1 || 
+      // Build.VERSION.SDK_INT == Build.VERSION_CODES.P ||
+      // Build.VERSION.SDK_INT == Build.VERSION_CODES.Q 
+      ){
+        
+        List<CellInfo> cellInfoList;
+       
+            cellInfoList = tmanager.getAllCellInfo();
+            if (cellInfoList != null) {
+                for (CellInfo cellInfo : cellInfoList) {
+                    if (cellInfo instanceof CellInfoGsm) {
+                        CellSignalStrengthGsm cellSignalStrengthGsm = ((CellInfoGsm) cellInfo).getCellSignalStrength();
+                        dbm = cellSignalStrengthGsm.getDbm();
+                        level = cellSignalStrengthGsm.getLevel();
+                        asu = cellSignalStrengthGsm.getAsuLevel();
+                    } else if (cellInfo instanceof CellInfoCdma) {
+                        CellSignalStrengthCdma cellSignalStrengthCdma =
+                                ((CellInfoCdma) cellInfo).getCellSignalStrength();
+                        dbm = cellSignalStrengthCdma.getDbm();
+                        level = cellSignalStrengthCdma.getLevel();
+                        asu = cellSignalStrengthCdma.getAsuLevel();
+                    } else if (cellInfo instanceof CellInfoLte) {
+                        CellSignalStrengthLte cellSignalStrengthLte = ((CellInfoLte) cellInfo).getCellSignalStrength();
+                        dbm = cellSignalStrengthLte.getDbm();
+                        level = cellSignalStrengthLte.getLevel();
+                        asu = cellSignalStrengthLte.getAsuLevel();
+                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        if (cellInfo instanceof CellInfoWcdma) {
+                            CellSignalStrengthWcdma cellSignalStrengthWcdma =
+                                    ((CellInfoWcdma) cellInfo).getCellSignalStrength();
+                            dbm = cellSignalStrengthWcdma.getDbm();
+                            level = cellSignalStrengthWcdma.getLevel();
+                            asu = cellSignalStrengthWcdma.getAsuLevel();
+                        }
+                    }
+                }
+            }
+             
+  
+        String signalDetail = "SignalStrength_M_2:" + "rssi=" + String.valueOf(dbm) + " " + "level=" + String.valueOf(level);
+      details = signalDetail;
+    }  
+    else {
+      details = "0";
+    }
+    
+    return details;
  }
  
   /**
@@ -108,7 +190,7 @@ public class NetworkSignalStrength extends CordovaPlugin {
    * corresponding type, e.g. CONNECTION_WIFI.
    */
   public byte getCurrentNetworkType() {
-     TelephonyManager tmanager = (TelephonyManager) cordova.getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+  TelephonyManager tmanager = (TelephonyManager) cordova.getActivity().getSystemService(Context.TELEPHONY_SERVICE);
   ConnectivityManager cmanager = (ConnectivityManager) cordova.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
 
     // connection types
@@ -160,64 +242,17 @@ public class NetworkSignalStrength extends CordovaPlugin {
     return CONNECTION_OFFLINE;
   }
 
-    /**
-     * initial test method for signal strength
-     *
-     */
-    //  public static netSignalstrength(Context Context){
-    //     // String message = args.getString(0);
-    //   // this.coolMethod(message, callbackContext);
-    //   // create object of class SignalStrengthStateListener
-    //   // networkSignalListener = new SignalStrengthStateListener();
-    //   TelephonyManager tm = (TelephonyManager) cordova
-    //     .getActivity()
-    //     .getSystemService(Context.TELEPHONY_SERVICE);
-    //   /**
-    //                 Callback invoked when network signal strengths changes on the registered subscription. Note, 
-    //                 the registration subscription ID comes from TelephonyManager object which registers 
-    //                 TelephonyCallback by TelephonyManager#registerTelephonyCallback(Executor, TelephonyCallback).
-    //              */
-    //   // tm.listen(networkSignalListener, TelephonyCallback.SignalStrengthsListener );
-    //   // int counter = 0;
-    //   // while ( dbm == -1) {
-    //   //         try {
-    //   //                 Thread.sleep(200);
-    //   //         } catch (InterruptedException e) {
-    //   //                 e.printStackTrace();
-    //   //         }
-    //   //         if (counter++ >= 5)
-    //   //         {
-    //   //                 break;
-    //   //         }
-    //   // }
-    //   // Log.d("signal details", tm.getSignalStrength());
-    //   // Log.d("signal dbm", dbm);
-    //  }
-    
-  // private void coolMethod(String message, CallbackContext callbackContext) {
-  //     if (message != null && message.length() > 0) {
-  //         callbackContext.success(message);
-  //     } else {
-  //         callbackContext.error("Expected one non-empty string argument.");
-  //     }
-  // }
+   
+  class SignalStrengthStateListener extends PhoneStateListener {
 
-  // class SignalStrengthStateListener extends TelephonyCallback {
+    @Override
+    public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+            super.onSignalStrengthsChanged(signalStrength);
+            int mainSignalStrength = signalStrength.getGsmSignalStrength();
+            rssiStrength = (2 * mainSignalStrength) - 113;  
+            signalLevel = signalStrength.getLevel();
+    }
 
-  // @Override
-  // public void onSignalStrengthsChanged(SignalStrength signalStrength) {
-  //         super.onSignalStrengthsChanged(signalStrength);
-  //         int tsNormSignalStrength = signalStrength.getDbm();
-  //         dbm = tsNormSignalStrength;     // -> dBm
-  //         // Log.d("signal details tsNormSignalStrength", tsNormSignalStrength);
-
-  // }
-
-  // }
-
-  // create object of class SignalStrengthStateListener
-  // SignalStrengthStateListener networkSignalListener;
-  // int dbm = -1;
-
+  }
 
 }
