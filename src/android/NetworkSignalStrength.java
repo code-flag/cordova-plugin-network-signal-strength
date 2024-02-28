@@ -196,12 +196,12 @@ public class NetworkSignalStrength extends CordovaPlugin {
     // connection types
     byte CONNECTION_UNKNOWN = -1; 
     byte CONNECTION_OFFLINE = 0; 
-    byte CONNECTION_ROAMING = 5;
+    byte CONNECTION_ROAMING = 10;
     byte CONNECTION_WIFI = 1; 
     byte CONNECTION_2G = 2; 
     byte CONNECTION_3G = 3;
     byte CONNECTION_4G = 4; 
-
+    byte CONNECTION_5G = 5; 
     NetworkInfo netInfo = cmanager.getActiveNetworkInfo();
 
     if (netInfo == null) return CONNECTION_OFFLINE;
@@ -234,6 +234,8 @@ public class NetworkSignalStrength extends CordovaPlugin {
           return CONNECTION_3G;
         case TelephonyManager.NETWORK_TYPE_LTE:
           return CONNECTION_4G;
+        case TelephonyManager.NETWORK_TYPE_NR:
+      return CONNECTION_5G;
         default:
           return CONNECTION_UNKNOWN;
       }
