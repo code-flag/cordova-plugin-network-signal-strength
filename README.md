@@ -31,7 +31,8 @@ The API has only one method `window["networkSignalStrength"].networkInfo(infoTyp
       - 2 : 2g
       - 3 : 3g
       - 4 : 4g
-      - 5 : roaming
+      - 5 : 5g
+      - 10 : roaming
   
   *code snippet*
   ```javascript
